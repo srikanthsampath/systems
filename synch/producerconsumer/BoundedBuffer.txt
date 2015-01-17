@@ -1,0 +1,45 @@
+Items -> items[N]
+
+Producer:
+        item = produceItem();
+	insertItem(item) -> inserts an item
+
+Consumer:
+	item = removeItem() -> removes an item
+        consumeItem(item);
+
+
+Semaphore availSlots = N;
+Semaphore availItems = 0;
+Semaphore mutex = 1;
+
+Producer() {
+    item = produceItem(); 
+
+    P(availSlots); // Make sure that there is space
+    P(mutex); // Critical Section
+       insertItem(item);
+    V(mutex); 
+    V(availItems);  // There is something to consume
+}
+
+
+
+Consumer() {
+
+    P(availItems);   	// Make sure there is something
+    P(mutex);
+        item = removeItem();	// Critical Section
+    V(mutex);
+    V(availSlots);	// Indicate there is space	
+    consumeItem(item);
+}
+
+
+
+
+
+
+
+
+
