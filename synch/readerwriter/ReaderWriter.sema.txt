@@ -1,0 +1,51 @@
+
+
+
+
+Semaphore nWriter = 1;
+Semaphore mutex = 1;
+int readCount = 0;
+
+
+
+Writer() {
+
+    P(nWriter); // Exclusive writer
+    
+        write....
+
+    V(nWriter);
+
+
+
+}
+
+
+Reader() {
+   
+    P(mutex); // Keep track of the number of readers
+        readCount ++;
+        if (readCount == 1) { // The first reader will get the write lock and hold it.....
+            P(nWriter);
+        }
+    V(mutex);
+
+    Read.....
+
+    P(mutex);
+        readCount --;
+        if (readCount == 0) { // Until the readcount is 0 when the writer can grab it, starvation
+            V(nWriter);
+        }
+    V(mutex);
+}
+
+    
+
+
+
+
+}
+
+
+
