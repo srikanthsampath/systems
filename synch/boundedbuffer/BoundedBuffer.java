@@ -1,4 +1,4 @@
-package systems.synch.producerconsumer;
+package systems.synch.boundedbuffer;
 
 import java.util.List;
 import java.util.LinkedList;
