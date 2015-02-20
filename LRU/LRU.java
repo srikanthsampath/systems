@@ -23,13 +23,12 @@ public class LRU<K, V>  {
 
     }
 
-    
     // Underlying storage is a hashmap. The value is a datastructure of the above type
     // We maintain a MRU-LRU Chain.  The list is maintained on the access sequence
     private int capacity;
     private Element<K, V> head = null;
     private Element<K, V> tail = null;
-    private Map<K, Element<K, V>>  hashMap = new HashMap<K, Element<K, V>>(); 
+    private Map<K, Element<K, V>>  hashMap = new HashMap<>(); 
 
 
     public LRU(int capacity) {
@@ -40,20 +39,24 @@ public class LRU<K, V>  {
         this.head = elem;
     }
 
+    private void replaceOldest() {
+        // fix the new tail
+        Element<K, V> curTail = this.tail;
+        Element<K, V> newTail = this.tail.prev;
+        newTail.next = null;
+        this.tail = newTail;
+
+        // Remove the element from the LRU end
+        this.hashMap.remove(curTail.k);
+    }
+
 
     // Adding a key-value pair
-    public void put(K k, V v) {
+    public synchronized void put(K k, V v) {
 
         // If we have reached capacity
         if (this.hashMap.size() == capacity) {
-            // fix the new tail
-            Element<K, V> curTail = this.tail;
-            Element<K, V> newTail = this.tail.prev;
-            newTail.next = null;
-            this.tail = newTail;
-
-            // Remove the element from the LRU end
-            this.hashMap.remove(curTail.k);
+            replaceOldest();
         }
         
         Element<K, V> curHead = this.head;
@@ -71,12 +74,16 @@ public class LRU<K, V>  {
         }
    
         setHead(elem);
+
         // Insert into the hash map
         hashMap.put(k, elem);
     }
 
-    public V get(K k) {
+    public synchronized V get(K k) {
         Element<K, V> v = hashMap.get(k);
+
+        if (v == null)
+            return null;
 
          // If this is at the head nothing to do
         if (v == this.head)
@@ -104,7 +111,7 @@ public class LRU<K, V>  {
         return v.v;
     }
 
-    public void print() {
+    public synchronized void print() {
         Element <K, V> curElement = this.head;
 
         while (curElement != null) {
@@ -118,8 +125,6 @@ public class LRU<K, V>  {
             System.out.println("Key: " + curElement.k + " Value: " + curElement.v);
             curElement = curElement.prev; 
         }
-
-
     }
 
 }
